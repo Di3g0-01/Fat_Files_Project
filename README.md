@@ -44,8 +44,8 @@ Por favor, mantén el código educativo y enfocado en conceptos de FAT.
 
 ## Créditos y Contacto
 
-- **Autor**: [Tu Nombre o Usuario de GitHub] – Basado en contenido de clase sobre Manejo de Archivos y FAT.
-- **Fecha**: Septiembre 2025.
-- Para dudas o sugerencias: [tu-email@ejemplo.com] o abre un issue en GitHub.
+- **Autor**: Diego Ovalle - Di3g0_01 – Basado en contenido de clase sobre Manejo e Implementación de Archivos y FAT.
+- **Fecha**: Octubre 2025.
+- Para dudas o sugerencias: Ovallediego.p@gmail.com o abre un issue en GitHub.
 
 ¡Gracias por usar este simulador! Si es para fines educativos, ¡espero que te ayude a entender mejor los sistemas de archivos. 🚀
