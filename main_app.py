@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMessageBox, QLineEdit, QListWidget
+from PyQt5.QtWidgets import QApplication, QMessageBox, QLineEdit, QListWidget, QLabel
 from PyQt5.QtCore import Qt
 from main_logic import FileSystemController 
 from ui_widgets import AuthWindow, MainWindow 
@@ -56,6 +56,7 @@ class MainApplication:
 
     def _setup_current_page_connections(self, index):
         
+        # 1. Bloque de Desconexión (Crucial para evitar múltiples conexiones)
         try: self.main_window.btn_create.clicked.disconnect()
         except (TypeError, RuntimeError): pass
         try: self.main_window.btn_open.clicked.disconnect()
@@ -68,41 +69,45 @@ class MainApplication:
         except (TypeError, RuntimeError): pass
         try: self.main_window.btn_recover.clicked.disconnect()
         except (TypeError, RuntimeError): pass
-        try: self.main_window.btn_add_user.clicked.disconnect()
+        try: self.main_window.btn_add_user.clicked.disconnect() # Desconexión del botón a corregir
         except (TypeError, RuntimeError): pass
         try: self.main_window.btn_apply_perm.clicked.disconnect()
         except (TypeError, RuntimeError): pass
 
         current_block = self.main_window.stacked_content.widget(index)
         
-        # 1. Crear Archivo
-        if current_block.findChild(QLineEdit, 'create_name_input'): 
+        # Identificamos la página por el título del ContentBlock (más robusto)
+        page_title = ""
+        try:
+             title_block = current_block.findChild(QLabel)
+             if title_block:
+                page_title = title_block.text()
+        except:
+             pass
+
+        # 2. Bloque de Conexión (Uso del título para la identificación)
+        if "1. Crear Archivo" in page_title: 
             self.main_window.btn_create.clicked.connect(self._handle_create_file)
         
-        # 2. Abrir Archivo
-        elif current_block.findChild(QLineEdit, 'open_name_input'):
+        elif "4. Abrir Archivo" in page_title:
             self.main_window.btn_open.clicked.connect(self._handle_open_file)
         
-        # 3. Modificar Archivo
-        elif current_block.findChild(QLineEdit, 'modify_name_input'):
+        elif "5. Modificar Archivo" in page_title:
             self.main_window.btn_load_content.clicked.connect(self._handle_load_content_for_modify)
             self.main_window.btn_modify.clicked.connect(self._handle_modify_file)
 
-        # 4. Mover a Papelera
-        elif current_block.findChild(QLineEdit, 'delete_name_input'):
+        elif "6. Mover a Papelera" in page_title:
             self.main_window.btn_delete.clicked.connect(self._handle_delete_file)
 
-        # 5. Recuperar Archivo
-        elif current_block.findChild(QLineEdit, 'recover_name_input'):
+        elif "7. Recuperar Archivo" in page_title:
             self.main_window.btn_recover.clicked.connect(self._handle_recover_file)
 
-        # 6. Gestión de Usuarios
-        elif current_block.findChild(QListWidget, 'user_list'):
+        # GESTIÓN DE USUARIOS (CORRECCIÓN APLICADA AQUÍ)
+        elif "8. Gestión de Usuarios" in page_title:
             self._refresh_user_list()
             self.main_window.btn_add_user.clicked.connect(self._handle_add_user)
             
-        # 7. Gestión de Permisos
-        elif current_block.findChild(QLineEdit, 'perm_file_input'):
+        elif "9. Gestión de Permisos" in page_title:
             self.main_window.btn_apply_perm.clicked.connect(self._handle_manage_perms)
             
     def _handle_logout(self):
@@ -157,7 +162,7 @@ class MainApplication:
 
         entry = self.controller.fat['files'][name]
         
-        # ⚠️ Verificación de permisos para cargar contenido (necesita permiso de escritura)
+        # Verificación de permisos de escritura antes de cargar
         if not self.controller.has_write_permission_logic(entry):
              QMessageBox.critical(self.main_window, "Error de Permisos", "No tienes permisos de escritura para cargar/modificar este archivo.")
              self.main_window.modify_content_input.clear()
@@ -235,8 +240,6 @@ class MainApplication:
     def _refresh_user_list(self):
         self.main_window.user_list.clear()
         
-        # Solo Admin debe ver la gestión de usuarios, pero si no se refresca, 
-        # el listado podría estar vacío si entra un admin y luego un user.
         if self.controller.is_admin():
             for user, data in self.controller.users.items():
                 self.main_window.user_list.addItem(f"{user} (Rol: {data['role']})")

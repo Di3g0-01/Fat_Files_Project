@@ -221,7 +221,7 @@ class FileSystemController:
         if entry["papelera"]: 
             return {"error": "Archivo en papelera."}
         
-        # ⚠️ VALIDACIÓN DE PERMISO DE LECTURA
+        # VALIDACIÓN DE PERMISO DE LECTURA
         if not self.is_admin() and not has_permission(entry, self.current_user, "read"): 
             return {"error": "Sin permisos de lectura."}
         
@@ -235,7 +235,7 @@ class FileSystemController:
         entry = self.fat["files"][name]
         if entry["papelera"]: return "Error: Archivo en papelera."
         
-        # ⚠️ VALIDACIÓN DE PERMISO DE ESCRITURA
+        # VALIDACIÓN DE PERMISO DE ESCRITURA
         if not self.is_admin() and not has_permission(entry, self.current_user, "write"): return "Error: Sin permisos de escritura."
         
         if entry["ruta_datos_inicial"]: delete_blocks(entry["ruta_datos_inicial"])
@@ -254,7 +254,7 @@ class FileSystemController:
         entry = self.fat["files"][name]
         if entry["papelera"]: return "Error: Ya está en papelera."
         
-        # ⚠️ VALIDACIÓN DE OWNER / ADMIN para eliminar
+        # VALIDACIÓN DE OWNER / ADMIN para eliminar
         if not self.is_admin() and entry["owner"] != self.current_user: return "Error: Solo el owner o admin puede eliminar."
         
         now = datetime.datetime.now().isoformat()
@@ -268,7 +268,7 @@ class FileSystemController:
         entry = self.fat["files"][name]
         if not entry["papelera"]: return "Error: No está en papelera."
         
-        # ⚠️ VALIDACIÓN DE OWNER / ADMIN para recuperar
+        # VALIDACIÓN DE OWNER / ADMIN para recuperar
         if not self.is_admin() and entry["owner"] != self.current_user: return "Error: Solo el owner o admin puede recuperar."
         
         entry["papelera"] = False
@@ -280,7 +280,7 @@ class FileSystemController:
         if name not in self.fat["files"]: return "Error: Archivo no existe."
         entry = self.fat["files"][name]
         
-        # ⚠️ VALIDACIÓN DE OWNER / ADMIN para gestionar permisos
+        # VALIDACIÓN DE OWNER / ADMIN para gestionar permisos
         if not self.is_admin() and entry["owner"] != self.current_user: return "Error: Solo el owner o admin puede gestionar permisos."
         
         if entry["papelera"]: return "Error: Archivo en papelera."

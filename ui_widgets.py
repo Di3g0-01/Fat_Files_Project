@@ -65,7 +65,7 @@ class AuthWindow(QWidget):
         else:
             self.stacked_widget.setCurrentWidget(self.login_page)
             
-        self.center_window() # ⬅️ CENTRADO
+        self.center_window() # Centrado
 
     def center_window(self):
         qr = self.frameGeometry()
@@ -178,7 +178,7 @@ class MainWindow(QWidget):
         
         self.show_list_files()
         
-        self.center_window() # ⬅️ CENTRADO
+        self.center_window() # Centrado
 
     def center_window(self):
         qr = self.frameGeometry()
@@ -239,7 +239,7 @@ class MainWindow(QWidget):
         self.main_layout.addWidget(self.side_menu)
 
     def _apply_role_restrictions(self):
-        pass # La lógica de restricción ya está principalmente en el backend/handlers
+        pass
 
     def _create_menu_block(self, title):
         frame = ContentBlock(title)
@@ -334,11 +334,12 @@ class MainWindow(QWidget):
             
             has_read_perm = self.controller.has_read_permission_logic(file)
             
-            if has_read_perm or is_trash or file['owner'] == self.controller.current_user:
+            # Se muestra si es el dueño, es admin o tiene permiso de lectura, o si está en papelera (listado de trash)
+            if self.controller.is_admin() or file['owner'] == self.controller.current_user or has_read_perm or is_trash:
                 line = f"{file['name']:<20} | {file['owner']:<15} | {size_info:<15} | {date_info}"
                 item = QListWidgetItem(line, list_widget)
                 
-                # Si no tiene permiso de lectura y no es el dueño ni el admin, colorear
+                # Si no tiene permiso de lectura y no es el dueño ni el admin, colorear para indicar acceso limitado
                 if not self.controller.is_admin() and not has_read_perm and file['owner'] != self.controller.current_user:
                      item.setForeground(QColor("#e74c3c"))
                      
